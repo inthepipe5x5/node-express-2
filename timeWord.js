@@ -130,9 +130,12 @@ const timeWord = (timeString) => {
       final = hoursStr + oClockString + checkIfAM(hoursStr);
     }
   } else {
-    final = hoursStr + " " + convertNumberToWord(minStr) + " " + checkIfAM(hoursStr);
+    final =
+      hoursStr + " " + convertNumberToWord(minStr) + " " + checkIfAM(hoursStr);
   }
 
   //return final output string
   return final;
 };
+
+export { timeWord, checkIfAM, convertNumberToWord };
