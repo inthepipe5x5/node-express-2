@@ -1,0 +1,24 @@
+{
+  "name": "express-2",
+  "version": "1.0.0",
+  "description": "Springboard Assessment #7",
+  "main": "jest.config.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inthepipe5x5/node-express-2.git#b91fc09affb4d480805a9d39a1e863256d899f54"
+  },
+  "author": "Lin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/inthepipe5x5/node-express-2/issues"
+  },
+  "homepage": "https://github.com/inthepipe5x5/node-express-2/tree/b91fc09affb4d480805a9d39a1e863256d899f54#readme",
+  "devDependencies": {
+    "@babel/core": "^7.24.5",
+    "@babel/preset-env": "^7.24.5",
+    "babel-jest": "^29.7.0"
+  }
+}
