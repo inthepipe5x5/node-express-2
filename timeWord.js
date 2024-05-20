@@ -86,8 +86,8 @@ const checkIfAM = (hourString) => {
   //return AM if true
   //else return PM
 
-  const AMString = "AM";
-  const PMString = "PM";
+  const AMString = "am";
+  const PMString = "pm";
   // Check if the input is a valid number string
   if (
     isNaN(hourString) ||

@@ -1,4 +1,4 @@
-const timeWord = require("./timeWord");
+const {timeWord, convertNumberToWord, checkIfAM} = require("./timeWord");
 
 describe("#timeword function tests", () => {
   test("it is a function", () => {
@@ -16,6 +16,25 @@ describe("#timeword function tests", () => {
     expect(timeWord("12:00")).toBe("noon");
     expect(timeWord("12:09")).toBe("twelve oh nine pm");
     expect(timeWord("23:23")).toBe("eleven twenty three pm");
+  });
+});
+
+describe("#checkIfAM function tests", () => {
+  test("it is a function", () => {
+    expect(typeof checkIfAM).toBe("function");
+  });
+  test("Basic checkIfAM Function Tests", () => {
+    expect(checkIfAM("00")).toBe("am");
+    expect(checkIfAM("00")).toBe("am");
+    expect(checkIfAM("01")).toBe("am");
+    expect(checkIfAM("06")).toBe("am");
+    expect(checkIfAM("06")).toBe("am");
+    expect(checkIfAM("06")).toBe("am");
+    expect(checkIfAM("06")).toBe("am");
+    expect(checkIfAM("10")).toBe("am");
+    expect(checkIfAM("12")).toBe("pm");
+    expect(checkIfAM("12")).toBe("pm");
+    expect(checkIfAM("23")).toBe("pm");
   });
 });
 
