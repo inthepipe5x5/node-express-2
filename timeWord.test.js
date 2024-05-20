@@ -1,4 +1,4 @@
-import { timeWord, convertNumberToWord, checkIfAM } from "./timeWord";
+const { timeWord, convertNumberToWord, checkIfAM } =  require("./timeWord");
 
 describe("#timeword function tests", () => {
   test("it is a function", () => {

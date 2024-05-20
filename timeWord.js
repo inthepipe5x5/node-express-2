@@ -138,4 +138,4 @@ const timeWord = (timeString) => {
   return final;
 };
 
-export { timeWord, checkIfAM, convertNumberToWord };
+module.exports = { timeWord, checkIfAM, convertNumberToWord };

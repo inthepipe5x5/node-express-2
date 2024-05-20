@@ -4,7 +4,7 @@
   "description": "Springboard Assessment #7",
   "main": "jest.config.js",
   "scripts": {
-    "test": "test"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,10 @@
     "@babel/core": "^7.24.5",
     "@babel/preset-env": "^7.24.5",
     "babel-jest": "^29.7.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
   }
 }
