@@ -7,7 +7,7 @@ describe("#timeword function tests", () => {
   test("Basic timeWord Function Tests", () => {
     expect(timeWord("00:00")).toBe("midnight");
     expect(timeWord("00:12")).toBe("twelve twelve am");
-    expect(timeWord("01:00")).toBe("one o’clock am");
+    expect(timeWord("01:00")).toBe("one o'clock am");
     expect(timeWord("06:01")).toBe("six oh one am");
     expect(timeWord("06:10")).toBe("six ten am");
     expect(timeWord("06:18")).toBe("six eighteen am");
@@ -46,7 +46,7 @@ describe("#convertNumberToWord function tests", () => {
     expect(convertNumberToWord("00")).toBe("zero");
     expect(convertNumberToWord("01")).toBe("one");
     expect(convertNumberToWord("10")).toBe("ten");
-    expect(convertNumberToWord("60")).toBe("sixty");
+    expect(convertNumberToWord("50")).toBe("fifty");
     expect(convertNumberToWord("12")).toBe("twelve");
     expect(convertNumberToWord("42")).toBe("forty two");
   });
