@@ -53,7 +53,7 @@ const convertNumberToWord = (numStr) => {
     if (hour === "12" && minute === "00") return "noon";
   
     if (minute === "00") {
-      return `${convertNumberToWord(hoursStr)} o’clock ${checkIfAM(hour)}`;
+      return `${convertNumberToWord(hoursStr)} o'clock ${checkIfAM(hour)}`;
     }
   
     // Handle single-digit minutes with "oh" prefix
