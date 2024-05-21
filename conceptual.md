@@ -119,3 +119,26 @@ INSERT INTO users (name, email) VALUES ('John Doe', 'john@example.com') RETURNIN
 - **State**:
   - **HTTP**: Stateless protocol where each request is independent and does not retain user state between requests.
   - **WebSockets**: Can maintain stateful interactions, allowing for continuous data exchange and session management over a persistent connection.
+
+### Did you prefer using Flask over Express? Why or why not (there is no right answer here --- we want to see how you think about technology)?
+
+When it comes to choosing between Flask and Express.js, my preference largely depends on the specific requirements of the project and my familiarity with the respective technologies. Both frameworks have their strengths and weaknesses, and the decision should be driven by a careful evaluation of the project's needs and my expertise.
+
+I find Flask, a lightweight and beginner-friendly Python web framework, to excel in simplicity and ease of use. Its minimalistic design and modular architecture make it an excellent choice for building small to medium-sized web applications and APIs. Flask's seamless integration with Python's vast ecosystem of libraries and tools is a significant advantage, especially when working with data processing, scientific computing, or machine learning tasks.
+
+On the other hand, Express.js, a minimalistic and flexible Node.js web framework, shines in performance and scalability. Its asynchronous programming model and seamless integration with the JavaScript ecosystem make it an ideal choice for building real-time applications, handling high traffic loads, and leveraging the vast array of Node.js modules and libraries.
+
+Here's how I typically approach the decision-making process:
+
+**Favoring Flask**:
+- If the project is relatively small or medium-sized, and simplicity and ease of development are priorities.
+- If I have strong Python expertise and prefer working with Python's rich ecosystem of libraries.
+- If the project involves data processing, scientific computing, or machine learning tasks that can benefit from Python's strengths in these areas.
+
+**Favoring Express.js**:
+- If the project requires high performance, scalability, and the ability to handle large-scale applications with high traffic.
+- If I have strong JavaScript expertise and prefer working within the Node.js ecosystem.
+- If the project involves building real-time applications, such as chat applications or collaborative tools.
+- If the project requires seamless integration with front-end JavaScript frameworks like React, Angular, or Vue.js.
+
+Ultimately, both Flask and Express.js are powerful and capable frameworks, and the choice often comes down to the specific project requirements, my expertise, and the overall technology stack being used. In some cases, a hybrid approach combining the strengths of both frameworks may be the most suitable solution.
