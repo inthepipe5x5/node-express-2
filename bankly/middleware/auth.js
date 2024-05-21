@@ -46,17 +46,19 @@ function requireAdmin(req, res, next) {
 
 function authUser(req, res, next) {
   try {
-    const token = req.body._token || req.query._token;
+    const token = req.body._token || req.query._token || req.headers.authorization?.split(' ')[1];
     if (token) {
-      let payload = jwt.decode(token);
+      const payload = jwt.verify(token, SECRET_KEY);
       req.curr_username = payload.username;
       req.curr_admin = payload.admin;
     }
-    return next();
   } catch (err) {
+    // If JWT verification fails, an error is raised
     err.status = 401;
     return next(err);
   }
+  // Always call next(), whether or not there was a token
+  return next();
 } // end
 
 module.exports = {
