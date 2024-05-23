@@ -21,7 +21,7 @@ function requireLogin(req, res, next) {
 
 function requireAdmin(req, res, next) {
   try {
-    if (req.curr_admin) {
+    if (req.curr_username === req.params.username || req.curr_admin) {
       return next();
     } else {
       return next({ status: 401, message: 'Unauthorized' });
