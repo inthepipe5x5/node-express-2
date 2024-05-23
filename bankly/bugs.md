@@ -1,9 +1,12 @@
 ### Bug #1
 *Issue:*
 *Solution:*
+
 ### Bug #2
-*Issue:*
+*Issue:* There is no apparent way to patch a user into an admin. Without admin privileges, the user cannot perform certain actions such as patch, delete but app does not allow a way to make a user into an admin or create new admins. Consequently, how will user data be patched or users be deleted?
+
 *Solution:*
+
 ### Bug #3 authUser function in ./middleware/auth.js uses jwt.decode instead of jwt.verify
 *Issue:*
 The authUser middleware function uses jwt.decode to decode the JWT token. According to JWT documentation, jwt.decode only decodes the token without verifying its validity. This means the token is not checked for signature correctness, expiration, or other critical security properties. Using jwt.decode here defeats the purpose of authentication because it does not ensure the token is valid and trusted.
