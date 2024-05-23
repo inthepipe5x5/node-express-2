@@ -9,4 +9,4 @@ CREATE TABLE users (
     admin boolean DEFAULT false
 );
 -- insert an admin as first user
-INSERT INTO USERS(username, first_name, last_name, email, phone, password, admin) VALUES ('admin', 'admin', 'user', 'admin@bankly.com', '1-800-456-7890', 'true') 
+-- INSERT INTO USERS(username, first_name, last_name, email, phone, password, admin) VALUES ('admin', 'admin', 'user', 'admin@bankly.com', '1-800-456-7890', 'true') 

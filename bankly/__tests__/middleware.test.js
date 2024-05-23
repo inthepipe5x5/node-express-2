@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const express = require('express');
 const request = require('supertest');
-const authUser = require('./auth.js'); // adjust the path as necessary
+const authUser = require('../middleware/auth.js'); // adjust the path as necessary
 
 const SECRET_KEY = require('../config.js');
 
