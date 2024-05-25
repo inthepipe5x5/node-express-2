@@ -1,44 +1,124 @@
-
 # Bugs Found
 
 ## **Bug #1**
 
-*Issue:*
-In ../middleware/auth.js/requireAdmin function, it returns an error to the Express error handler if the curr_admin property on the request is falsy. Since this is middleware required to patch and delete users, we need to change the way this middleware works to also ensure that it first checks if the req.username matches the username in the URL params before checking the curr_admin property.
-*Solution:*
-The new code changes the logic to check the request using an OR statement to check if the username matches the route parameters.
+_Issue:_
+In ../middleware/auth.js/requireAdmin function, it returns an error to the Express error handler if the `curr_admin` property on the request is falsy. Since this is middleware required to patch and delete users, we need to change the way this middleware used in the `'users/:username'` patch route.
+
+_Solution:_
+
+- Removed `requireAdmin` middleware from route as it was too strict; permission handling will be handled in route instead
+- Added in route permission checking
+  - if the right non-admin tried to change an admin only change (ie. changing the `admin` field), the route will throw a `status: 401, Unauthorized error` as intended.
+  - if an invalid field was passed in the request, the route will throw a `status: 400, Bad request error` as intended.
 
 ```javascript
-    if (req.curr_username === req.params.username || req.curr_admin) {
-    // Allow access
-    } else {
-    // Return an error
-    }
+router.patch(
+  "/:username",
+  authUser,
+  requireLogin,
+  /*requireAdmin REMOVED */
+  async function (req, res, next) {
+    try {
+      /* more code here, added more auth logic below fields variable declaration and User.update function call:*/
+
+      if (
+        !Object.keys(fields).some((field) => //use .some() function to ensure that only valid column names are passed in through the request body
+          [
+            "password",
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "admin",
+          ].includes(field)
+        )
+      )
+        throw new ExpressError("Invalid fields provided in request", 400);
 ```
 
 ## **Bug #2**
 
-*Issue:*
-There is no apparent way to patch a user into an admin. Without admin privileges, the user cannot perform certain actions such as patch or delete, but the app does not allow a way to make a user into an admin or create new admins. Consequently, how will user data be patched or users be deleted?
-*Solution:*
-Change the first if statement in ./routes/user.js/router.patch('/:username') to use an OR operator instead of an AND operator. The logic to check request credentials should look like the following:
+_Issue:_
+Before the changes made in Bug #1 above, there was no apparent way to patch a user into an admin even as an admin user. After the changes made in Bug #1, admin users can edit existing users to become admins but there are no tests to confirm this.
+_Solution:_
+Added tests to `__tests__/routes.test.js` to confirm the following route use cases:
+
+- logged in (non-admin) users can patch their stored personal information. App will deny access if not admin/right user
+- logged in (non-admin) users cannot patch their own admin status. App will deny access if not admin
+- logged in (non-admin) users cannot patch other user details. App will deny access if not admin/right user
+- logged in admins can patch admin status on other users. Admins can now grant admin permissions
+- Bad requests (ie. non-existent fields) will not be patched and will return a `400 Bad request` error
 
 ```javascript
-    if (!req.curr_admin || req.curr_username !== req.params.username) {
-    // Return an error
-    } else {
-    // Allow access
-    }
+  test("should allow patch as right user but not admin", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u1, first_name: "new-fn1" }); // u1 is right user, non-admin
+    expect(response.statusCode).toBe(200);
+    expect(response.body.user).toEqual({
+      username: "u1",
+      first_name: "new-fn1",
+      last_name: "ln1",
+      email: "email1",
+      phone: "phone1",
+      admin: false,
+      password: expect.any(String)
+    });
+  });
+
+  test("should deny access if not admin/right user", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u2 }); // wrong user!
+    expect(response.statusCode).toBe(401);
+  });
+
+  test("should patch data if admin", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u3, first_name: "new-fn1", admin: true }); // u3 is admin
+    expect(response.statusCode).toBe(200);
+    expect(response.body.user).toEqual({
+      username: "u1",
+      first_name: "new-fn1",
+      last_name: "ln1",
+      email: "email1",
+      phone: "phone1",
+      admin: true, //user is now admin
+      password: expect.any(String)
+    });
+  });
+
+  test("should disallow patching non-existent-fields", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u1, kebob: true }); //kebob is non-existent field
+    expect(response.statusCode).toBe(400);
+  });
+
+  test("should disallow patching not-allowed-fields", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u1, admin: true });
+    expect(response.statusCode).toBe(401);
+  });
 ```
 
 By changing it to an OR statement, the route logic can handle requests from users with different usernames but with admin privileges. The original logic would only accept requests from admins with the same username as the requested user.
 
 ## **Bug #3** authUser function in ./middleware/auth.js uses jwt.decode instead of jwt.verify
 
-*Issue:*
-The authUser middleware function uses jwt.decode to decode the JWT token. According to JWT documentation, jwt.decode only decodes the token without verifying its validity. This means the token is not checked for signature correctness, expiration, or other critical security properties. Using jwt.decode here defeats the purpose of authentication because it does not ensure the token is valid and trusted.
+_Issue:_
+The authUser middleware function uses `jwt.decode()` to decode the JWT token. According to JWT documentation, jwt.decode only decodes the token without verifying its validity. This means the token is not checked for signature correctness, expiration, or other critical security properties. Using jwt.decode here defeats the purpose of authentication because it does not ensure the token is valid and trusted.
 
-*Solution:*
-Replace jwt.decode with jwt.verify. The jwt.verify method not only decodes the token but also checks its validity against the provided secret key, ensuring the token is genuine and has not been tampered with.
+_Solution:_
+Replaced `jwt.decode` with `jwt.verify`. The `jwt.verify` method not only decodes the token but also checks its validity against the provided secret key, ensuring the token is genuine and has not been tampered with.
+<!-- 
+## **Bug #** 
+
+_Issue:_
+
+_Solution:_ -->
 
 \n

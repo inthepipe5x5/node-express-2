@@ -63,20 +63,24 @@ router.get('/:username', authUser, requireLogin, async function(
  *
  */
 
-router.patch('/:username', authUser, requireLogin, requireAdmin, async function(
+router.patch('/:username', authUser, requireLogin, async function(
   req,
   res,
   next
 ) {
   try {
-    if (!req.curr_admin || req.curr_username !== req.params.username) {
+    if (!req.curr_admin && req.curr_username !== req.params.username) {
       throw new ExpressError('Only  that user or admin can edit a user.', 401);
     }
 
-    // get fields to change; remove token so we don't try to change it
+    // get fields to change; 
     let fields = { ...req.body };
+    //remove token so we don't try to change it
     delete fields._token;
-
+    //handle if user attempts to modify admin-only user attribute
+    if (fields.admin && !req.curr_admin) throw new ExpressError('Only that user or admin can edit user admin status', 401);
+    if (!Object.keys(fields).some(field => ["password", "first_name", "last_name", "email", "phone", "admin"].includes(field))) throw new ExpressError('Invalid fields provided in request', 400)
+    //update user
     let user = await User.update(req.params.username, fields);
     return res.json({ user });
   } catch (err) {

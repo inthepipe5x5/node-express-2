@@ -133,18 +133,11 @@ describe("PATCH /users/[username]", function() {
     const response = await request(app).patch("/users/u1");
     expect(response.statusCode).toBe(401);
   });
-
-  test("should deny access if not admin/right user", async function() {
+  
+  test("should allow patch as right user but not admin", async function() {
     const response = await request(app)
       .patch("/users/u1")
-      .send({ _token: tokens.u2 }); // wrong user!
-    expect(response.statusCode).toBe(401);
-  });
-
-  test("should patch data if admin", async function() {
-    const response = await request(app)
-      .patch("/users/u1")
-      .send({ _token: tokens.u3, first_name: "new-fn1" }); // u3 is admin
+      .send({ _token: tokens.u1, first_name: "new-fn1" }); // u1 is right user, non-admin
     expect(response.statusCode).toBe(200);
     expect(response.body.user).toEqual({
       username: "u1",
@@ -157,7 +150,37 @@ describe("PATCH /users/[username]", function() {
     });
   });
 
-  test("should disallowing patching not-allowed-fields", async function() {
+  test("should deny access if not admin/right user", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u2 }); // wrong user!
+    expect(response.statusCode).toBe(401);
+  });
+
+  test("should patch data if admin", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u3, first_name: "new-fn1", admin: true }); // u3 is admin
+    expect(response.statusCode).toBe(200);
+    expect(response.body.user).toEqual({
+      username: "u1",
+      first_name: "new-fn1",
+      last_name: "ln1",
+      email: "email1",
+      phone: "phone1",
+      admin: true, //user is now admin
+      password: expect.any(String)
+    });
+  });
+
+  test("should disallow patching non-existent-fields", async function() {
+    const response = await request(app)
+      .patch("/users/u1")
+      .send({ _token: tokens.u1, kebob: true }); //kebob is non-existent field
+    expect(response.statusCode).toBe(400);
+  });
+
+  test("should disallow patching not-allowed-fields", async function() {
     const response = await request(app)
       .patch("/users/u1")
       .send({ _token: tokens.u1, admin: true });
