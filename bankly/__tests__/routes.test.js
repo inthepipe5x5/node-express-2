@@ -126,6 +126,20 @@ describe("GET /users/[username]", function() {
       phone: "phone1"
     });
   });
+  test("should return 404 on non-existent user", async function() {
+    const response = await request(app)
+      .get("/users/u999")
+      .send({ _token: tokens.u1 }); //non-admin user attempts to find non-existing user
+      expect(response.body).toEqual({message:'No such user', status: 404});
+    expect(response.statusCode).toEqual(404);
+  });
+  test("should return 404 on non-existent user", async function() {
+    const response = await request(app)
+      .get("/users/u999")
+      .send({ _token: tokens.u3 }); //admin attempts to find non-existing user
+      expect(response.body).toEqual({message:'No such user', status: 404});
+    expect(response.statusCode).toEqual(404);
+  });
 });
 
 describe("PATCH /users/[username]", function() {
@@ -214,6 +228,20 @@ describe("DELETE /users/[username]", function() {
       .send({ _token: tokens.u3 }); // u3 is admin
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({ message: "deleted" });
+  });
+  test("should return 404 on non-existent user", async function() {
+    const response = await request(app)
+      .delete("/users/u999")
+      .send({ _token: tokens.u1 }); //non-admin user attempts to delete non-existing user
+      expect(response.body).toEqual({message:'Unauthorized', status: 401});
+    expect(response.statusCode).toEqual(401);
+  });
+  test("should return 404 on non-existent user", async function() {
+    const response = await request(app)
+      .delete("/users/u999")
+      .send({ _token: tokens.u3 }); //admin user attempts to delete non-existing user
+      expect(response.body).toEqual({message:'No such user', status: 404});
+    expect(response.statusCode).toEqual(404);
   });
 });
 

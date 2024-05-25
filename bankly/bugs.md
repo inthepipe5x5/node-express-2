@@ -114,11 +114,39 @@ The authUser middleware function uses `jwt.decode()` to decode the JWT token. Ac
 
 _Solution:_
 Replaced `jwt.decode` with `jwt.verify`. The `jwt.verify` method not only decodes the token but also checks its validity against the provided secret key, ensuring the token is genuine and has not been tampered with.
-<!-- 
-## **Bug #** 
+
+## **Bug #4**
 
 _Issue:_
+After updating `authUser`, there are no tests specifically for the middleware.
+_Solution:_
+Added middleware tests to `./__tests__/middleware.tests.js`.
 
-_Solution:_ -->
+## **Bug #5**
+
+_Issue:_
+Non-existing usernames were not being properly handled by the `/GET /:usernames` route as it was not returning a `404 status code` as intended.
+_Solution:_
+
+- Added `throw` keyword to the `.get()` method from `./models/users.js`.
+- Added logic in the `/GET/:username` and `/DELETE/:username` route to check if user is not falsy before returning results, else it throws a 404 error
+- Added two tests that confirmed that neither an admin nor a registered user can search for non-existing usernames
+- Added two tests that checks that non-admin users are given `"Unauthorized, 401` response when attempting to delete non-existent user and admins are given a `"No such user, 404` response when attempting the same action
+
+```javascript
+/*./bankly/models/user.js/User.update()
+Added THROW keyword in conditional statement
+*/
+    if (!user) {
+        throw new ExpressError('No such user', 404);
+    }
+
+/*Route logic added to both:
+./bankly/routes/user.js/router.get('/:username')
+./bankly/routes/user.js/router.delete('/:username')
+*/
+    let user = await User.get(req.params.username);
+    if (user.status_code === 404) throw new ExpressError('No such user', 404)
+```
 
 \n

@@ -42,6 +42,7 @@ router.get('/:username', authUser, requireLogin, async function(
 ) {
   try {
     let user = await User.get(req.params.username);
+    if (user.status_code === 404) throw new ExpressError('No such user', 404)
     return res.json({ user });
   } catch (err) {
     return next(err);
@@ -104,8 +105,10 @@ router.delete('/:username', authUser, requireAdmin, async function(
   next
 ) {
   try {
-    User.delete(req.params.username);
-    return res.json({ message: 'deleted' });
+    const user = await User.delete(req.params.username);
+    if (user.status_code === 404) throw new ExpressError('No such user', 404); else {
+      return res.json({ message: 'deleted' });
+    }
   } catch (err) {
     return next(err);
   }
