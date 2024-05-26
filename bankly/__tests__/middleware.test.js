@@ -16,43 +16,40 @@ const { authUser, requireAdmin, requireLogin } = require("../middleware/auth");
 const tokens = {};
 
 /** before each test, insert un1, un2, and un3  [un3 is admin] */
-
 beforeEach(async function () {
-  async function _pwd(password) {
-    return await bcrypt.hash(password, 1);
-  }
-
-  let sampleUsers = [
-    ["un1", "fn1", "ln1", "email1", "phone1", await _pwd("pwd1"), false],
-    ["un2", "fn2", "ln2", "email2", "phone2", await _pwd("pwd2"), false],
-    ["un3", "fn3", "ln3", "email3", "phone3", await _pwd("pwd3"), true],
-  ];
-
-  for (let user of sampleUsers) {
-    tokens[user[0]] = createToken(user[0], user[6]);
-  }
-});
-
-describe("authUser Middleware", () => {
-  beforeEach(() => {
+    async function _pwd(password) {
+      return await bcrypt.hash(password, 1);
+    }
+  
+    let sampleUsers = [
+      ["un1", "fn1", "ln1", "email1", "phone1", await _pwd("pwd1"), false],
+      ["un2", "fn2", "ln2", "email2", "phone2", await _pwd("pwd2"), false],
+      ["un3", "fn3", "ln3", "email3", "phone3", await _pwd("pwd3"), true],
+    ];
+  
+    for (let user of sampleUsers) {
+      tokens[user[0]] = createToken(user[0], user[6]);
+    }
+  
+    // Define the test route inside beforeEach to reset it before each test
     app.get("/test", authUser, (req, res, next) => {
       const { curr_admin, curr_username } = req;
-      if (!req._token) {
-        return res.status(404).toEqual({ message: "Not Found", status: 404 });
+      if (!curr_admin && !curr_username) {
+        return res.status(401).json({ message: "Unauthorized" });
       } else {
-        return res.status(200).json({
+        return res.json({
           curr_username: req.curr_username,
           curr_admin: req.curr_admin,
         });
       }
     });
-
+  
     app.use((err, req, res, next) => {
-      console.error(err.stack);
       res.status(err.status || 500).json({ message: err.message });
     });
   });
 
+describe("authUser Middleware", () => {
   test("should set curr_username and curr_admin for a valid token", async () => {
     const res = await request(app).get("/test").send({ _token: tokens.un3 });
     expect(res.body).toEqual({ curr_username: "un3", curr_admin: true });
