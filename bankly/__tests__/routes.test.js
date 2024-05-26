@@ -117,15 +117,16 @@ describe("GET /users/[username]", function() {
     const response = await request(app)
       .get("/users/u1")
       .send({ _token: tokens.u1 });
-    expect(response.statusCode).toBe(200);
-    expect(response.body.user).toEqual({
-      username: "u1",
-      first_name: "fn1",
-      last_name: "ln1",
-      email: "email1",
-      phone: "phone1"
-    });
+      expect(response.body.user).toEqual({
+        username: "u1",
+        first_name: "fn1",
+        last_name: "ln1",
+        email: "email1",
+        phone: "phone1"
+      });
+      expect(response.statusCode).toBe(200);
   });
+  //TESTS BUG #5
   test("should return 404 on non-existent user", async function() {
     const response = await request(app)
       .get("/users/u999")
@@ -133,6 +134,7 @@ describe("GET /users/[username]", function() {
       expect(response.body).toEqual({message:'No such user', status: 404});
     expect(response.statusCode).toEqual(404);
   });
+  //TESTS BUG #5
   test("should return 404 on non-existent user", async function() {
     const response = await request(app)
       .get("/users/u999")
@@ -147,7 +149,7 @@ describe("PATCH /users/[username]", function() {
     const response = await request(app).patch("/users/u1");
     expect(response.statusCode).toBe(401);
   });
-  
+  //TESTS BUG #2
   test("should allow patch as right user but not admin", async function() {
     const response = await request(app)
       .patch("/users/u1")
@@ -163,14 +165,14 @@ describe("PATCH /users/[username]", function() {
       password: expect.any(String)
     });
   });
-
+  //TESTS BUG #1
   test("should deny access if not admin/right user", async function() {
     const response = await request(app)
       .patch("/users/u1")
       .send({ _token: tokens.u2 }); // wrong user!
     expect(response.statusCode).toBe(401);
   });
-
+  //TESTS BUG #1
   test("should patch data if admin", async function() {
     const response = await request(app)
       .patch("/users/u1")
@@ -186,14 +188,14 @@ describe("PATCH /users/[username]", function() {
       password: expect.any(String)
     });
   });
-
+  //TESTS BUG #2
   test("should disallow patching non-existent-fields", async function() {
     const response = await request(app)
       .patch("/users/u1")
       .send({ _token: tokens.u1, kebob: true }); //kebob is non-existent field
     expect(response.statusCode).toBe(400);
   });
-
+  //TESTS BUG #2
   test("should disallow patching not-allowed-fields", async function() {
     const response = await request(app)
       .patch("/users/u1")
@@ -229,6 +231,7 @@ describe("DELETE /users/[username]", function() {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({ message: "deleted" });
   });
+  //TESTS BUG #5
   test("should return 404 on non-existent user", async function() {
     const response = await request(app)
       .delete("/users/u999")
@@ -236,6 +239,7 @@ describe("DELETE /users/[username]", function() {
       expect(response.body).toEqual({message:'Unauthorized', status: 401});
     expect(response.statusCode).toEqual(401);
   });
+  //TESTS BUG #5
   test("should return 404 on non-existent user", async function() {
     const response = await request(app)
       .delete("/users/u999")

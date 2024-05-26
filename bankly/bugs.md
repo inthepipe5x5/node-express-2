@@ -1,6 +1,6 @@
 # Bugs Found
 
-## **Bug #1**
+## **Bug #1** `requireAdmin` function removed from `/PATCH /users/:username`
 
 _Issue:_
 In ../middleware/auth.js/requireAdmin function, it returns an error to the Express error handler if the `curr_admin` property on the request is falsy. Since this is middleware required to patch and delete users, we need to change the way this middleware used in the `'users/:username'` patch route.
@@ -37,7 +37,7 @@ router.patch(
         throw new ExpressError("Invalid fields provided in request", 400);
 ```
 
-## **Bug #2**
+## **Bug #2** `/PATCH` route permission fixes
 
 _Issue:_
 Before the changes made in Bug #1 above, there was no apparent way to patch a user into an admin even as an admin user. After the changes made in Bug #1, admin users can edit existing users to become admins but there are no tests to confirm this.
@@ -113,7 +113,17 @@ _Issue:_
 The authUser middleware function uses `jwt.decode()` to decode the JWT token. According to JWT documentation, jwt.decode only decodes the token without verifying its validity. This means the token is not checked for signature correctness, expiration, or other critical security properties. Using jwt.decode here defeats the purpose of authentication because it does not ensure the token is valid and trusted.
 
 _Solution:_
-Replaced `jwt.decode` with `jwt.verify`. The `jwt.verify` method not only decodes the token but also checks its validity against the provided secret key, ensuring the token is genuine and has not been tampered with.
+Replaced `jwt.decode` with `jwt.verify`. The `jwt.verify` method not only decodes the token but also checks its validity against the provided secret key, ensuring the token is genuine and has not been tampered with. Added logic to check if valid token and to throw an `Unauthorized, 401` error if not valid.
+
+```Javascript
+    if (payload instanceof jwt.JsonWebTokenError)
+      throw new ExpressError({ message: "Unauthorized" }, 401);
+    //if valid token
+    else {
+      req.curr_username = payload.username;
+      req.curr_admin = payload.admin;
+    }
+```
 
 ## **Bug #4**
 

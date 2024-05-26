@@ -1,7 +1,8 @@
 /** Middleware for handling req authorization for routes. */
 
-const jwt = require('jsonwebtoken');
-const { SECRET_KEY } = require('../config');
+const jwt = require("jsonwebtoken");
+const { SECRET_KEY } = require("../config");
+const ExpressError = require("../helpers/expressError");
 
 /** Authorization Middleware: Requires user is logged in. */
 
@@ -10,7 +11,7 @@ function requireLogin(req, res, next) {
     if (req.curr_username) {
       return next();
     } else {
-      return next({ status: 401, message: 'Unauthorized' });
+      return next({ status: 401, message: "Unauthorized" });
     }
   } catch (err) {
     return next(err);
@@ -24,7 +25,7 @@ function requireAdmin(req, res, next) {
     if (req.curr_admin) {
       return next();
     } else {
-      return next({ status: 401, message: 'Unauthorized' });
+      return next({ status: 401, message: "Unauthorized" });
     }
   } catch (err) {
     return next(err);
@@ -46,9 +47,17 @@ function requireAdmin(req, res, next) {
 
 function authUser(req, res, next) {
   try {
-    const token = req.body._token || req.query._token || req.headers.authorization?.split(' ')[1];
-    if (token) {
-      let payload = jwt.verify(token, SECRET_KEY); 
+    const token =
+      req.body._token ||
+      req.query._token ||
+      req.headers.authorization?.split(" ")[1];
+
+    let payload = jwt.verify(token, SECRET_KEY);
+    //if invalid token
+    if (payload instanceof jwt.JsonWebTokenError)
+      throw new ExpressError({ message: "Unauthorized" }, 401);
+    //if valid token
+    else {
       req.curr_username = payload.username;
       req.curr_admin = payload.admin;
     }
@@ -62,5 +71,5 @@ function authUser(req, res, next) {
 module.exports = {
   requireLogin,
   requireAdmin,
-  authUser
+  authUser,
 };
