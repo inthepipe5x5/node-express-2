@@ -25,5 +25,8 @@
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
     }
+  },
+  "dependencies": {
+    "node-mocks-http": "^1.14.1"
   }
 }
